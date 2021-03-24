@@ -1,7 +1,7 @@
 import React from 'react'
-import github from '@images/github.png'
-import twitter from '@images/twitter.png'
-import instagram from '@images/instagram.png'
+import github from '../assets/images/github.png'
+import twitter from '../assets/images/twitter.png'
+import instagram from '../assets/images/instagram.png'
 
 function Template(props){
   const { data } = props
