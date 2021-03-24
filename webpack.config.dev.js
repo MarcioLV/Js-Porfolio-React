@@ -1,36 +1,47 @@
-const path = require('path')
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const Dotenv = require('dotenv-webpack')
+
+
+const basePath = __dirname;
+const distPath = 'dist';
+const indexInput = './public/index.html';
+const indexOutput = './index.html'
+
 
 module.exports = {
-  entry: '/src/index.js',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].[contenthash].js',
-    assetModuleFilename: 'assets/images/[hash][ext][query]',
-  },
   mode: 'development',
   resolve: {
-    extensions: ['.js'],
+    extensions:['.js']
   },
-  module: {
+  entry: './src/index.js',
+  output: {
+    path: path.resolve(basePath, distPath),
+    filename: '[name][contenthash].js',
+    assetModuleFilename: 'assets/images/[hash][ext][query]',
+    clean: true,
+  },
+  module:{
     rules: [
       {
         test: /\.m?js$/,
-        exclude: /node_module/,
-        use:{
-          loader: 'babel-loader',
-        }
+        exclude: /node_modules/,
+        use: [
+          {
+           loader: 'babel-loader'
+          }
+       ]
       },
       {
         test:/\.html$/,
+        exclude: /node_modules/,
         use:{
           loader: 'html-loader'
         }
       },
       {
-        test: /\.css|styl$/i,
+        test: /\.css|.styl$/i,
+        exclude: /node_module/,
         use: [
           MiniCssExtractPlugin.loader,
           "css-loader",
@@ -43,19 +54,29 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2)$/i,
-        type: 'asset/resource',
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name:'[name].[contenthash].[ext]',
+              outputPath: './assets/fonts/',
+              puclicPath: "../assets/fonts/",
+              esModule: false,
+            }
+          }
+        ]
       },
     ]
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html',
-      filename: './index.html'
+      inject: true,
+      filename: indexOutput,
+      template: indexInput,
     }),
     new MiniCssExtractPlugin({
-      filename: 'assets/[name][contenthash].css'
-    }),
-    new Dotenv(),
+      filename: 'assets/[name].[contenthash].css',
+    })
   ],
   devServer: {
     contentBase: path.join(__dirname,'dist'),

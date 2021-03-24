@@ -14,32 +14,30 @@ module.exports = {
     assetModuleFilename: 'assets/images/[hash][ext][query]',
   },
   resolve: {
-    extensions: ['.js','.jsx'],
-    alias:{
-      '@utils': path.resolve(__dirname,'src/utils/'),
-      '@templates': path.resolve(__dirname,'src/templates/'),
-      '@styles': path.resolve(__dirname,'src/styles/'),
-      '@images': path.resolve(__dirname,'src/assets/images/'),
-    },
+    extensions: ['.js'],
   },
   mode: 'production',
-  module: {
+  module:{
     rules: [
       {
-        test: /\.(js|jsx)$/,
-        exclude: /node_module/,
-        use:{
-          loader: 'babel-loader',
-        }
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: [
+          {
+           loader: 'babel-loader'
+          }
+       ]
       },
       {
         test:/\.html$/,
+        exclude: /node_modules/,
         use:{
           loader: 'html-loader'
         }
       },
       {
-        test: /\.(css|styl)$/i,
+        test: /\.css|.styl$/i,
+        exclude: /node_module/,
         use: [
           MiniCssExtractPlugin.loader,
           "css-loader",
@@ -52,7 +50,17 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2)$/i,
-        type: 'asset/resource',
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name:'[name].[contenthash].[ext]',
+              outputPath: './assets/fonts/',
+              puclicPath: "../assets/fonts/",
+              esModule: false,
+            }
+          }
+        ]
       },
     ]
   },
@@ -62,7 +70,7 @@ module.exports = {
       filename: './index.html'
     }),
     new MiniCssExtractPlugin({
-      filename: 'assets/[name][contenthash].css'
+      filename: 'assets/[name].[contenthash].css'
     }),
     new Dotenv(),
     new CleanWebpackPlugin(),
